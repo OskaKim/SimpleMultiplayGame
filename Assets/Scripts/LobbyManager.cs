@@ -7,8 +7,14 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class LobbyManager : MonoBehaviour {
+    [SerializeField] string lobbyId;
+
     private void Start() {
         UnityServices.InitializeAsync();
+        Locator.Get.Provide(new Identity(OnAuthSignIn));
+    }
+    private void OnAuthSignIn() {
+        Debug.Log("OnAuthSignIn");
     }
 
     void Update() {
@@ -16,9 +22,16 @@ public class LobbyManager : MonoBehaviour {
             LobbyUser lobbyUser = new LobbyUser();
             lobbyUser.DisplayName = "hoge";
             CreateLobbyAsync("lobby_name", 2, false, lobbyUser, (Lobby lobby) => {
+                lobbyId = lobby.Id;
                 Debug.Log("success");
             }, () => {
                 Debug.Log("failed");
+            });
+        }
+
+        if (Input.GetKeyDown(KeyCode.G)) {
+            LobbyAPIInterface.DeleteLobbyAsync(lobbyId, ()=> {
+                Debug.Log("delete lobby finished");
             });
         }
     }
