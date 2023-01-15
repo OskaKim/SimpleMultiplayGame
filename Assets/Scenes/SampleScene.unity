@@ -409,4 +409,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LogUIDocument: {fileID: 1281134420}
-  numOfLogVisualElement: 5
+  numOfLogVisualElement: 6

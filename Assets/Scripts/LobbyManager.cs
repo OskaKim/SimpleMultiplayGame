@@ -9,16 +9,31 @@ using UnityEngine;
 public class LobbyManager : MonoBehaviour {
     [SerializeField] string lobbyId;
     [SerializeField] LobbyLogUIController uiController;
+
     private void Start() {
         UnityServices.InitializeAsync();
         Locator.Get.Provide(new Identity(OnAuthSignIn));
     }
+
+    private void OnEnable() {
+        LobbyLogUIController.OnChangeLobbyId += OnChangeLobbyId;
+    }
+
+    private void OnDisable() {
+        LobbyLogUIController.OnChangeLobbyId -= OnChangeLobbyId;
+    }
+
+    private void OnChangeLobbyId(string text) {
+        lobbyId = text;
+        Debug.Log($"OnChangeLobbyId : {text}");
+    }
+
     private void OnAuthSignIn() {
         Debug.Log("OnAuthSignIn");
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.F)) {
+        if (Input.GetKeyDown(KeyCode.F1)) {
             LobbyUser lobbyUser = new LobbyUser();
             lobbyUser.DisplayName = "hoge";
             CreateLobbyAsync("lobby_name", 2, false, lobbyUser, (Lobby lobby) => {
@@ -28,27 +43,31 @@ public class LobbyManager : MonoBehaviour {
                 uiController.SetLog(2, $"{lobby.Data}");
                 uiController.SetLog(3, $"{lobby.EnvironmentId}");
                 uiController.SetLog(4, $"{lobby.HostId}");
+                uiController.SetLog(5, "success");
                 Debug.Log("success");
             }, () => {
+                uiController.SetLog(5, "failed");
                 Debug.Log("failed");
             });
         }
 
-        if (Input.GetKeyDown(KeyCode.J)) {
+        if (Input.GetKeyDown(KeyCode.F2)) {
             LobbyUser lobbyUser = new LobbyUser();
             lobbyUser.DisplayName = "joinedUser";
-            joinLobby("", lobbyUser, (Lobby lobby) => {
+            joinLobby(lobbyId, lobbyUser, (Lobby lobby) => {
                 lobbyId = lobby.Id;
                 uiController.SetLog(0, $"{lobbyId}");
                 uiController.SetLog(1, $"{lobby.Created}");
                 uiController.SetLog(2, $"{lobby.Data}");
                 uiController.SetLog(3, $"{lobby.EnvironmentId}");
                 uiController.SetLog(4, $"{lobby.HostId}");
+                uiController.SetLog(5, "success");
             });
         }
 
-        if (Input.GetKeyDown(KeyCode.G)) {
+        if (Input.GetKeyDown(KeyCode.F3)) {
             LobbyAPIInterface.DeleteLobbyAsync(lobbyId, () => {
+                uiController.SetLog(5, "success");
                 Debug.Log("delete lobby finished");
             });
         }

@@ -5,5 +5,8 @@
         <ui:Label text="Null" display-tooltip-when-elided="true" name="Log2" />
         <ui:Label text="Null" display-tooltip-when-elided="true" name="Log3" />
         <ui:Label text="Null" display-tooltip-when-elided="true" name="Log4" />
+        <ui:Label text="Null" display-tooltip-when-elided="true" name="Log5" />
+        <ui:TextField picking-mode="Ignore" label="LobbyId" text="null" name="LobbyId" />
     </ui:VisualElement>
+    <ui:Button text="Join Lobby" display-tooltip-when-elided="true" name="JoinLobbyButton" />
 </ui:UXML>
