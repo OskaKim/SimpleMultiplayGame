@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class LobbyManager : MonoBehaviour {
     [SerializeField] string lobbyId;
-
+    [SerializeField] LobbyLogUIController uiController;
     private void Start() {
         UnityServices.InitializeAsync();
         Locator.Get.Provide(new Identity(OnAuthSignIn));
@@ -23,6 +23,11 @@ public class LobbyManager : MonoBehaviour {
             lobbyUser.DisplayName = "hoge";
             CreateLobbyAsync("lobby_name", 2, false, lobbyUser, (Lobby lobby) => {
                 lobbyId = lobby.Id;
+                uiController.SetLog(0, $"{lobbyId}");
+                uiController.SetLog(1, $"{lobby.Created}");
+                uiController.SetLog(2, $"{lobby.Data}");
+                uiController.SetLog(3, $"{lobby.EnvironmentId}");
+                uiController.SetLog(4, $"{lobby.HostId}");
                 Debug.Log("success");
             }, () => {
                 Debug.Log("failed");
@@ -30,7 +35,7 @@ public class LobbyManager : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.G)) {
-            LobbyAPIInterface.DeleteLobbyAsync(lobbyId, ()=> {
+            LobbyAPIInterface.DeleteLobbyAsync(lobbyId, () => {
                 Debug.Log("delete lobby finished");
             });
         }
