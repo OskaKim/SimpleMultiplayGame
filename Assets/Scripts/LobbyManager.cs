@@ -71,6 +71,17 @@ public class LobbyManager : MonoBehaviour {
                 Debug.Log("delete lobby finished");
             });
         }
+
+        if (Input.GetKeyDown(KeyCode.F4)) {
+            QueryAllLobbies((QueryResponse response) => {
+                Debug.Log(response.ContinuationToken);
+                foreach (var result in response.Results) {
+                    Debug.Log(result.AvailableSlots);
+                    Debug.Log(result.Upid);
+                    Debug.Log(result.Name);
+                }
+            });
+        }
     }
     public void CreateLobbyAsync(string lobbyName, int maxPlayers, bool isPrivate, LobbyUser localUser, Action<Lobby> onSuccess, Action onFailure) {
         //if (!m_rateLimitHost.CanCall()) {
@@ -93,6 +104,10 @@ public class LobbyManager : MonoBehaviour {
     public void joinLobby(string lobbyId, LobbyUser localUser, Action<Lobby> onSuccess) {
         string uasId = AuthenticationService.Instance.PlayerId;
         LobbyAPIInterface.JoinLobbyAsync_ById(uasId, lobbyId, CreateInitialPlayerData(localUser), onSuccess);
+    }
+
+    public void QueryAllLobbies(Action<QueryResponse> onComplete) {
+        LobbyAPIInterface.QueryAllLobbiesAsync(null, onComplete);
     }
 
     private static Dictionary<string, PlayerDataObject> CreateInitialPlayerData(LobbyUser player) {
