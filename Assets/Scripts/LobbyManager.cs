@@ -10,18 +10,25 @@ public class LobbyManager : MonoBehaviour {
     [SerializeField] string lobbyId;
     [SerializeField] LobbyLogUIController uiController; // todo : 삭제
     [SerializeField] LobbyTopUIController lobbyTopUIController;
+    private readonly LobbyUser lobbyUser = new();
 
     private void Start() {
         UnityServices.InitializeAsync();
         Locator.Get.Provide(new Identity(OnAuthSignIn));
+
+        lobbyUser.DisplayName = "display name";
     }
 
     private void OnEnable() {
         LobbyLogUIController.OnChangeLobbyId += OnChangeLobbyId;
+        lobbyTopUIController.onClickCreateRoomButton += OnCreateRoom;
+        lobbyTopUIController.onClickRefreshRoomButton += OnRefreshRoom;
     }
 
     private void OnDisable() {
         LobbyLogUIController.OnChangeLobbyId -= OnChangeLobbyId;
+        lobbyTopUIController.onClickCreateRoomButton -= OnCreateRoom;
+        lobbyTopUIController.onClickRefreshRoomButton -= OnRefreshRoom;
     }
 
     private void OnChangeLobbyId(string text) {
@@ -34,9 +41,30 @@ public class LobbyManager : MonoBehaviour {
         RefreshLobbyListAsync();
     }
 
+    private void OnCreateRoom() {
+        CreateLobbyAsync("lobby Name");
+    }
+
+    private void OnRefreshRoom() {
+        RefreshLobbyListAsync();
+    }
+
+    // 로비 만들기
+    private void CreateLobbyAsync(string lobbyName) {
+        CreateLobbyAsync(lobbyName, 2, false, lobbyUser, (Lobby lobby) => {
+            Debug.Log("success");
+            lobbyId = lobby.Id;
+
+            // note : 방을 만들고 확인을 위해 로비 업데이트
+            RefreshLobbyListAsync();
+        }, () => {
+            Debug.Log("failed");
+        });
+    }
+
     // 로비 업데이트
     private void RefreshLobbyListAsync() {
-        QueryAllLobbies((QueryResponse response) => {
+        QueryAllLobbiesAsync((QueryResponse response) => {
             var lobbyElementParamsList = new List<LobbyTopUIController.LobbyElementParams>();
             foreach (var result in response.Results) {
                 lobbyElementParamsList.Add(new LobbyTopUIController.LobbyElementParams(result.Name));
@@ -48,31 +76,11 @@ public class LobbyManager : MonoBehaviour {
 
     // todo : 코드 정리
     void Update() {
-        if (Input.GetKeyDown(KeyCode.F1)) {
-            LobbyUser lobbyUser = new LobbyUser();
-            lobbyUser.DisplayName = "hoge";
-            CreateLobbyAsync("lobby_name", 2, false, lobbyUser, (Lobby lobby) => {
-                lobbyId = lobby.Id;
-                //uiController.SetLog(0, $"{lobbyId}");
-                //uiController.SetLog(1, $"{lobby.Created}");
-                //uiController.SetLog(2, $"{lobby.Data}");
-                //uiController.SetLog(3, $"{lobby.EnvironmentId}");
-                //uiController.SetLog(4, $"{lobby.HostId}");
-                //uiController.SetLog(5, "success");
-
-                // note : 방을 만들고 확인을 위해 로비 리스트에 표시함
-                RefreshLobbyListAsync();
-                Debug.Log("success");
-            }, () => {
-                uiController.SetLog(5, "failed");
-                Debug.Log("failed");
-            });
-        }
 
         if (Input.GetKeyDown(KeyCode.F2)) {
             LobbyUser lobbyUser = new LobbyUser();
             lobbyUser.DisplayName = "joinedUser";
-            joinLobby(lobbyId, lobbyUser, (Lobby lobby) => {
+            joinLobbyAsync(lobbyId, lobbyUser, (Lobby lobby) => {
                 lobbyId = lobby.Id;
                 uiController.SetLog(0, $"{lobbyId}");
                 uiController.SetLog(1, $"{lobby.Created}");
@@ -87,17 +95,6 @@ public class LobbyManager : MonoBehaviour {
             LobbyAPIInterface.DeleteLobbyAsync(lobbyId, () => {
                 uiController.SetLog(5, "success");
                 Debug.Log("delete lobby finished");
-            });
-        }
-
-        if (Input.GetKeyDown(KeyCode.F4)) {
-            QueryAllLobbies((QueryResponse response) => {
-                Debug.Log(response.ContinuationToken);
-                foreach (var result in response.Results) {
-                    Debug.Log(result.AvailableSlots);
-                    Debug.Log(result.Upid);
-                    Debug.Log(result.Name);
-                }
             });
         }
     }
@@ -119,12 +116,12 @@ public class LobbyManager : MonoBehaviour {
         }
     }
 
-    public void joinLobby(string lobbyId, LobbyUser localUser, Action<Lobby> onSuccess) {
+    public void joinLobbyAsync(string lobbyId, LobbyUser localUser, Action<Lobby> onSuccess) {
         string uasId = AuthenticationService.Instance.PlayerId;
         LobbyAPIInterface.JoinLobbyAsync_ById(uasId, lobbyId, CreateInitialPlayerData(localUser), onSuccess);
     }
 
-    public void QueryAllLobbies(Action<QueryResponse> onComplete) {
+    public void QueryAllLobbiesAsync(Action<QueryResponse> onComplete) {
         LobbyAPIInterface.QueryAllLobbiesAsync(null, onComplete);
     }
 

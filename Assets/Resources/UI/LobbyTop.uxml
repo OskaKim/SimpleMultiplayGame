@@ -2,7 +2,8 @@
     <ui:VisualElement style="flex-basis: 70%;">
         <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" nested-interaction-kind="Default" />
     </ui:VisualElement>
-    <ui:VisualElement>
-        <ui:Button text="Button" display-tooltip-when-elided="true" style="flex-basis: 153%; flex-direction: row-reverse; width: 50%; right: auto; left: 50%; transform-origin: center; justify-content: flex-end; align-items: center; flex-grow: 0;" />
+    <ui:VisualElement name="Footer" style="align-items: flex-end; flex-direction: row-reverse; flex-shrink: 1;">
+        <ui:Button text="Refresh" display-tooltip-when-elided="true" name="RefreshButton" style="flex-basis: auto; flex-direction: row-reverse; width: auto; right: auto; left: auto; transform-origin: center; justify-content: flex-end; align-items: center; flex-grow: 0;" />
+        <ui:Button text="create room" display-tooltip-when-elided="true" name="CreateRoomButton" style="flex-basis: auto; flex-direction: row-reverse; width: auto; right: auto; left: auto; transform-origin: center; justify-content: flex-end; align-items: center; flex-grow: 0;" />
     </ui:VisualElement>
 </ui:UXML>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,12 +33,28 @@ public class LobbyTopUIController : MonoBehaviour {
         }
     }
 
+    public event Action onClickCreateRoomButton;
+    public event Action onClickRefreshRoomButton;
     private VisualElement rootVisualElement;
     private ScrollView scrollView;
+    private Button createRoomButton;
+    private Button refreshRoomButton;
 
     private void Awake() {
         rootVisualElement = this.GetComponent<UIDocument>().rootVisualElement;
         scrollView = rootVisualElement.Q<ScrollView>();
+        createRoomButton = rootVisualElement.Q<Button>(name: "CreateRoomButton");
+        refreshRoomButton = rootVisualElement.Q<Button>(name: "RefreshButton");
+    }
+
+    private void OnEnable() {
+        createRoomButton.clicked += OnClickCreateRoomButton;
+        refreshRoomButton.clicked += OnClickRefreshRoomButton;
+    }
+
+    private void OnDisable() {
+        createRoomButton.clicked -= OnClickCreateRoomButton;
+        refreshRoomButton.clicked -= OnClickRefreshRoomButton;
     }
 
     public void RefreshLobbyList(List<LobbyElementParams> elementParamsList) {
@@ -48,5 +65,13 @@ public class LobbyTopUIController : MonoBehaviour {
             scrollView.Add(lobbyElement);
             lobbyElement.LobbyNameLabel = elementParams.Name;
         });
+    }
+
+    private void OnClickCreateRoomButton() {
+        onClickCreateRoomButton();
+    }
+
+    private void OnClickRefreshRoomButton() {
+        onClickRefreshRoomButton();
     }
 }
