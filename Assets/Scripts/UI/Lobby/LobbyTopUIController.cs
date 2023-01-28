@@ -15,7 +15,7 @@ public class LobbyElementComponent : VisualElement {
         _lobbyNameLabel.AddToClassList(ClassNames.LobbyName);
         Add(_lobbyNameLabel);
     }
-    
+
     public string LobbyNameLabel {
         get => _lobbyNameLabel.text;
         set => _lobbyNameLabel.text = value;
@@ -24,17 +24,29 @@ public class LobbyElementComponent : VisualElement {
 
 [RequireComponent(typeof(UIDocument))]
 public class LobbyTopUIController : MonoBehaviour {
+    public struct LobbyElementParams {
+        public string Name { get; private set; }
+
+        public LobbyElementParams(string name) {
+            Name = name;
+        }
+    }
+
     private VisualElement rootVisualElement;
+    private ScrollView scrollView;
 
     private void Awake() {
         rootVisualElement = this.GetComponent<UIDocument>().rootVisualElement;
-        var scrollView = rootVisualElement.Q<ScrollView>();
+        scrollView = rootVisualElement.Q<ScrollView>();
+    }
 
-        // todo : 로비를 쿼리하고 결과 수 만큼만 생성
-        for (int i = 0; i < 100; ++i) {
+    public void RefreshLobbyList(List<LobbyElementParams> elementParamsList) {
+        scrollView.ClearClassList();
+
+        elementParamsList.ForEach((LobbyElementParams elementParams) => {
             var lobbyElement = new LobbyElementComponent();
             scrollView.Add(lobbyElement);
-            lobbyElement.LobbyNameLabel = "name sample";
-        }
+            lobbyElement.LobbyNameLabel = elementParams.Name;
+        });
     }
 }

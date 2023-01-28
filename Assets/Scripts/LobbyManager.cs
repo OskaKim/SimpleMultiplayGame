@@ -8,7 +8,8 @@ using UnityEngine;
 
 public class LobbyManager : MonoBehaviour {
     [SerializeField] string lobbyId;
-    [SerializeField] LobbyLogUIController uiController;
+    [SerializeField] LobbyLogUIController uiController; // todo : 삭제
+    [SerializeField] LobbyTopUIController lobbyTopUIController;
 
     private void Start() {
         UnityServices.InitializeAsync();
@@ -30,20 +31,37 @@ public class LobbyManager : MonoBehaviour {
 
     private void OnAuthSignIn() {
         Debug.Log("OnAuthSignIn");
+        RefreshLobbyListAsync();
     }
 
+    // 로비 업데이트
+    private void RefreshLobbyListAsync() {
+        QueryAllLobbies((QueryResponse response) => {
+            var lobbyElementParamsList = new List<LobbyTopUIController.LobbyElementParams>();
+            foreach (var result in response.Results) {
+                lobbyElementParamsList.Add(new LobbyTopUIController.LobbyElementParams(result.Name));
+            }
+
+            lobbyTopUIController.RefreshLobbyList(lobbyElementParamsList);
+        });
+    }
+
+    // todo : 코드 정리
     void Update() {
         if (Input.GetKeyDown(KeyCode.F1)) {
             LobbyUser lobbyUser = new LobbyUser();
             lobbyUser.DisplayName = "hoge";
             CreateLobbyAsync("lobby_name", 2, false, lobbyUser, (Lobby lobby) => {
                 lobbyId = lobby.Id;
-                uiController.SetLog(0, $"{lobbyId}");
-                uiController.SetLog(1, $"{lobby.Created}");
-                uiController.SetLog(2, $"{lobby.Data}");
-                uiController.SetLog(3, $"{lobby.EnvironmentId}");
-                uiController.SetLog(4, $"{lobby.HostId}");
-                uiController.SetLog(5, "success");
+                //uiController.SetLog(0, $"{lobbyId}");
+                //uiController.SetLog(1, $"{lobby.Created}");
+                //uiController.SetLog(2, $"{lobby.Data}");
+                //uiController.SetLog(3, $"{lobby.EnvironmentId}");
+                //uiController.SetLog(4, $"{lobby.HostId}");
+                //uiController.SetLog(5, "success");
+
+                // note : 방을 만들고 확인을 위해 로비 리스트에 표시함
+                RefreshLobbyListAsync();
                 Debug.Log("success");
             }, () => {
                 uiController.SetLog(5, "failed");
