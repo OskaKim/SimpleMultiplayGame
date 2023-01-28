@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-basis: 70%;">
+        <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" nested-interaction-kind="Default" />
+    </ui:VisualElement>
+    <ui:VisualElement>
+        <ui:Button text="Button" display-tooltip-when-elided="true" style="flex-basis: 153%; flex-direction: row-reverse; width: 50%; right: auto; left: 50%; transform-origin: center; justify-content: flex-end; align-items: center; flex-grow: 0;" />
+    </ui:VisualElement>
+</ui:UXML>
